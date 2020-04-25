@@ -42,7 +42,7 @@ JSON should have these fields according to type of message. Here are the formats
         "message": "This the message sent by user"
       },
       ```
-    2. Action -          
+  2. Action -          
       ```
       "2": {
         "datetime": "11/05/2019, 2:40 pm",
@@ -50,4 +50,11 @@ JSON should have these fields according to type of message. Here are the formats
         "action": "Stephen created group GROUP_NAME"
       }
       ```
-    
+  3. Media -
+    ```
+    "13": {
+      "datetime": "25/10/2019, 3:30 pm",
+      "user": "+91 81432 75536",
+      "isMedia": true
+    }
+    ```
