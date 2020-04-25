@@ -12,7 +12,7 @@ message in chat looks like -
 ```
 We have two types of chats - 
   1. Personal Chat
-  2. Group Chat
+  2. Group Chat            
 But we are gonna parse both chats in a generalised way.
 
 We do have 3 types of messages - 
