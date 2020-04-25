@@ -15,10 +15,10 @@ But we are gonna parse both chats in a generalised way.
 
 We do have 3 types of messages - 
   1. Messages 
-    - Message sent by the user.           
-    - This message was deleted.            
+    + Message sent by the user.           
+    + This message was deleted.            
   2. Actions
-    - Someone created this group.       
+    + Someone created this group.       
     - Someone updated profile picture.         
     - Someone changed their phone number from x to y.         
     - Someone left from the group.         
