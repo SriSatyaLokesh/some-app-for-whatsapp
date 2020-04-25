@@ -58,7 +58,7 @@ JSON should have these fields according to type of message. Here are the formats
       ```
       "3": {
         "datetime": "25/10/2019, 3:30 pm",
-        "user": "+91 81432 75536",
+        "user": "user_name",
         "isMedia": true
       }
       ```
