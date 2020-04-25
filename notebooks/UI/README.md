@@ -1,6 +1,7 @@
 ## Aim is to convert WhatsAppChatExport.txt into JSON
 
 #### Typical JSON Objects looks like
+> message in chat - 25/10/2019, 3:38 pm - name_of_user: This the message sent by user
 ```
   "1": {
     "datetime": "25/10/2019, 3:38 pm",
