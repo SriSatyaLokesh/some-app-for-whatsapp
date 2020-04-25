@@ -26,11 +26,13 @@ We do have 3 types of messages -
     - Someone deleted Profile picture          
     - Someone changed group description.           
     - Messages in this chat are end-to-end encrypted (once in a chat).        
-  3. Media
-    - Images         
-    - GIFs         
-    - Videos       
-    - Stickers      
+  3. Media 
+    - Usually we don't get the type of media user has sent. But here are some types of media we may get -      
+        - Images         
+        - GIFs         
+        - Videos       
+        - Stickers       
+        - Documents      
 
 JSON should have these fields according to type of message. Here are the formats for all 3 types of messages - 
   1. Nomral message -           
@@ -51,10 +53,10 @@ JSON should have these fields according to type of message. Here are the formats
       }
       ```
   3. Media -
-    ```
-    "13": {
-      "datetime": "25/10/2019, 3:30 pm",
-      "user": "+91 81432 75536",
-      "isMedia": true
-    }
-    ```
+      ```
+      "3": {
+        "datetime": "25/10/2019, 3:30 pm",
+        "user": "+91 81432 75536",
+        "isMedia": true
+      }
+      ```
