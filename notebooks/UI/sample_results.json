@@ -1,7 +1,9 @@
 {
   "0": {
     "chat_name": "CSE 2K16-2K20",
-    "chat_type": "group"
+    "chat_type": "group",
+    "participants_count":"230",
+    "participants":["name1","name2","name3"]
   },
   "1": {
     "datetime": "11/05/2019, 2:40 pm",
