@@ -39,7 +39,3 @@ class Cleaner:
                    'Message': list(chainer(user_msgs.values()))}) 
     return df
 
-chat_file = input()
-clean = Cleaner(chat_file)
-raw_msgs_df = clean._get_data()
-print(raw_msgs_df)
