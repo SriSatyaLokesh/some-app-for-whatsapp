@@ -11,31 +11,34 @@ class Cleaner:
     chat_file = self.filename
     with open(chat_file) as file:
       all_msgs = file.readlines()
-      clean_msgs = []
+      raw_texts = []
       for line in all_msgs:
         if re.match("^\d{2}/\d{2}/\d{2},\s\d{1,2}:\d{2}\s[ap]m",line):
-          date_split = line.split(' - ')
+          date_split = line.split(' - ') #date and user
           user_split = date_split[1].split(':')
           if len(user_split) >= 2:
-            clean_msgs.append(line)
+            raw_texts.append(line)
         else:
-          clean_msgs[-1] += line
+          try:
+            raw_texts[-1] += line
+          except Exception as err:
+            print(line,raw_texts)
+            print(err)
 
-    return clean_msgs 
+    return raw_texts 
       
   def _get_data(self):
-    cleaned_msgs = self._clean_data()
-    user_msgs = dict()
-    for line in cleaned_msgs:
+    raw_texts = self._clean_data()
+    raw_messages = dict()
+    for line in raw_texts:
       date_split = line.split(' - ')
       user_split = date_split[1].split(':')
-      if user_split[0] not in user_msgs:
-        user_msgs[user_split[0]] = []
-        user_msgs[user_split[0]].append(line)
+      user = user_split[0]
+      if user not in raw_messages:
+        raw_messages[user] = [line]
       else:
-        user_msgs[user_split[0]].append(line)
+        raw_messages[user].append(line)
 
-    df = pd.DataFrame({'User': list(chainer(repeat(k, len(v)) for k,v in user_msgs.items())),
-                   'Message': list(chainer(user_msgs.values()))}) 
+    df = pd.DataFrame({'user': list(chainer(repeat(k, len(v)) for k,v in raw_messages.items())),
+                   'raw_message': list(chainer(raw_messages.values()))}) 
     return df
-
