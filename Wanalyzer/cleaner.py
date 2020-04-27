@@ -13,7 +13,7 @@ class Cleaner:
       all_msgs = file.readlines()
       raw_texts = []
       for line in all_msgs:
-        if re.match("^\d{2}/\d{2}/\d{2},\s\d{1,2}:\d{2}\s[ap]m",line):
+        if re.match("^\d{2}/\d{2}/\d{4},\s\d{1,2}:\d{2}\s[ap]m",line): #need to improve this RegEx
           date_split = line.split(' - ') #date and user
           user_split = date_split[1].split(':')
           if len(user_split) >= 2:
