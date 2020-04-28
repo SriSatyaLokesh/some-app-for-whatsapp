@@ -13,7 +13,7 @@ class Cleaner:
       all_msgs = file.readlines()
       raw_texts = []
       for line in all_msgs:
-        if re.match("^\d{2}/\d{2}/\d{4},\s\d{1,2}:\d{2}\s[ap]m",line): #need to improve this RegEx
+        if re.match("^\d{2}/\d{2}/\d{2,4},\s\d{1,2}:\d{2}\s[ap][m]",line):
           date_split = line.split(' - ') #date and user
           user_split = date_split[1].split(':')
           if len(user_split) >= 2:
@@ -38,7 +38,21 @@ class Cleaner:
         raw_messages[user] = [line]
       else:
         raw_messages[user].append(line)
-
     df = pd.DataFrame({'user': list(chainer(repeat(k, len(v)) for k,v in raw_messages.items())),
                    'raw_message': list(chainer(raw_messages.values()))}) 
+    return df
+
+  def _get_message(self,df):
+    df["clean_message"] = df.apply(lambda df : "".join(df['raw_message'].split(":")[2:]),axis=1)
+
+    return df
+
+  def _get_text_only_message(self,df):
+
+    remove_digits = str.maketrans('', '', digits)
+    df["text_only_message"] = df.apply(lambda df : df["clean_message"].encode('ascii', 'ignore').decode('ascii'),axis=1)     # removing emoji s from cleam_message
+    df["text_only_message"] = df.apply(lambda df : df["text_only_message"].translate(remove_digits),axis=1)          # removing digits from clean_message
+
+    df.loc[(df['text_only_message'] == " This message was deleted\n") | (df['text_only_message'] == " \n"),'text_only_message'] = "" # updating "This message was deleted\n" and  "\n" to ""(empty_string)
+
     return df
