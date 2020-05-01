@@ -1,5 +1,6 @@
 import pandas as pd
 from itertools import chain, repeat
+from string import digits
 import re
 
 chainer = chain.from_iterable
@@ -56,3 +57,12 @@ class Cleaner:
     df.loc[(df['text_only_message'] == " This message was deleted\n") | (df['text_only_message'] == " \n"),'text_only_message'] = "" # updating "This message was deleted\n" and  "\n" to ""(empty_string)
 
     return df
+
+  def _remove_inactive_users(self,df):
+    df = df.groupby('user').filter(lambda x : len(x) > 10)
+    return df
+
+  def _get_user_media_counts(self,df):
+    media_count = df[df['text_only_message'] == " <Media omitted>\n"].groupby('user').size()
+    user_media_counts = media_count.to_dict()
+    return user_media_counts
