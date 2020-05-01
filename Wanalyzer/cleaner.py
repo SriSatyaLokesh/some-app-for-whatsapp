@@ -65,7 +65,7 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["raw_message","users"]
+          Dataframe of all messages with columns - ["raw_text","users"]
       
     """
     raw_texts = self._clean_data()
@@ -79,7 +79,7 @@ class Cleaner:
       else:
         raw_messages[user].append(line)
     df = pd.DataFrame({'user': list(chainer(repeat(k, len(v)) for k,v in raw_messages.items())),
-                   'raw_message': list(chainer(raw_messages.values()))}) 
+                   'raw_text': list(chainer(raw_messages.values()))}) 
     return df
 
   def _get_message(self,df):
@@ -95,10 +95,11 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["users","raw_message","clean_message",]
+          Dataframe of all messages with columns - ["users","raw_text","raw_message",]
       
     """
-    df["clean_message"] = df.apply(lambda df : "".join(df['raw_message'].split(":")[2:]),axis=1)
+    df["raw_message"] = df.apply(lambda df : "".join(df['raw_text'].split(":")[2:]),axis=1)
+    df["raw_message"] = df.apply(lambda df : df['raw_message'][:-1],axis=1)
     return df
 
   def _get_text_only_message(self,df):
@@ -114,14 +115,14 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["users","raw_message","clean_message",text_only_message]
+          Dataframe of all messages with columns - ["users","raw_text","raw_message",text_only_message]
       
     """
     remove_digits = str.maketrans('', '', digits)
-    df["text_only_message"] = df.apply(lambda df : df["clean_message"].encode('ascii', 'ignore').decode('ascii'),axis=1)     # removing emoji s from cleam_message
+    df["text_only_message"] = df.apply(lambda df : df["raw_message"].encode('ascii', 'ignore').decode('ascii'),axis=1)     # removing emoji s from cleam_message
     df["text_only_message"] = df.apply(lambda df : df["text_only_message"].translate(remove_digits),axis=1)          # removing digits from clean_message
 
-    df.loc[(df['text_only_message'] == " This message was deleted\n") | (df['text_only_message'] == " \n"),'text_only_message'] = "" # updating "This message was deleted\n" and  "\n" to ""(empty_string)
+    df.loc[(df['text_only_message'] == " This message was deleted") | (df['text_only_message'] == " <Media omitted>"),'text_only_message'] = "" # updating "This message was deleted" & "media" to ""(empty_string)
 
     return df
 
@@ -161,6 +162,27 @@ class Cleaner:
                           key as 'user' : value as 'media_count'
       
     """
-    media_count = df[df['text_only_message'] == " <Media omitted>\n"].groupby('user').size()
+    media_count = df[df['raw_message'] == " <Media omitted>"].groupby('user').size()
     user_media_counts = media_count.to_dict()
     return user_media_counts
+
+  def _get_datetime(self,df):
+    df['date'] =  df.apply(lambda df : df['raw_text'].split(" - ")[0],axis=1)
+
+    temp = ["%d/%m/%Y, %I:%M %p" , "%d/%m/%y, %I:%M %p" , "%d/%m/%Y, %H:%M" , "%d/%m/%y, %H:%M" ,
+        "%d/%Y/%m, %I:%M %p" , "%d/%y/%m, %I:%M %p" , "%d/%Y/%m, %H:%M" , "%d/%y/%m, %H:%M" ,
+        "%Y/%m/%d, %I:%M %p" , "%y/%m/%d, %I:%M %p" , "%Y/%m/%d, %H:%M" , "%y/%m/%d, %H:%M" ,
+        "%Y/%d/%m, %I:%M %p" , "%y/%d/%m, %I:%M %p" , "%Y/%d/%m, %H:%M" , "%y/%d/%m, %H:%M" ,
+        "%m/%Y/%d, %I:%M %p" , "%m/%y/%d, %I:%M %p" , "%m/%Y/%d, %H:%M" , "%m/%y/%d, %H:%M" ,
+        "%m/%d/%Y, %I:%M %p" , "%m/%d/%y, %I:%M %p" , "%m/%d/%Y, %H:%M" , "%m/%d/%y, %H:%M"]
+
+    for formats in temp:       
+      try:
+        df['date'] = pd.to_datetime(df['date'], format=formats)
+      except:
+        continue
+    df['hour'] = df['date'].dt.hour
+    df['weekday'] = df['date'].dt.weekday
+    
+    return df
+  
