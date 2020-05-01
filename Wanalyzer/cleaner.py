@@ -38,8 +38,8 @@ class Cleaner:
       all_msgs = file.readlines()
       raw_texts = []
       for line in all_msgs:
-        if re.match("^\d{2}/\d{2}/\d{2,4},\s\d{1,2}:\d{2}\s[ap][m]",line):
-          date_split = line.split(' - ') #date and user
+        if re.match("^\d{2}/\d{2}/\d{2,4},\s\d{1,2}:\d{2}\s[ap]*[m]*",line):
+          date_split = line.split(' - ') 
           user_split = date_split[1].split(':')
           if len(user_split) >= 2:
             raw_texts.append(line)
@@ -65,7 +65,7 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["raw_text","users"]
+          Dataframe of all messages with columns - ["users", "raw_text"]
       
     """
     raw_texts = self._clean_data()
@@ -95,7 +95,7 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["users","raw_text","raw_message",]
+          Dataframe of all messages with columns - ["users", "raw_text", "raw_message",]
       
     """
     df["raw_message"] = df.apply(lambda df : "".join(df['raw_text'].split(":")[2:]),axis=1)
@@ -115,7 +115,7 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["users","raw_text","raw_message",text_only_message]
+          Dataframe of all messages with columns - ["users", "raw_text", "raw_message", "text_only_message"]
       
     """
     remove_digits = str.maketrans('', '', digits)
@@ -139,7 +139,7 @@ class Cleaner:
       Returns:
       --------
       df : dataframe
-          Dataframe of all messages with columns - ["users","raw_message","clean_message",text_only_message]
+          Dataframe of all messages with columns - ["users", "raw_text", "raw_message", "text_only_message"]
           removing inactive users
       
     """
@@ -167,6 +167,26 @@ class Cleaner:
     return user_media_counts
 
   def _get_datetime(self,df):
+    """ 
+    What it does?
+    ----------------
+      3 columns are added i.e 
+      
+      1. "date" : datetime from raw_text
+      2. "hour" : Hour from date column
+      3. "weekday" : day of the week from date column 
+      
+      Parameters:
+      -----------
+      df : dataframe
+          
+      Returns:
+      --------
+      df : dataframe
+          Dataframe with only active user messages with columns - ["users", "raw_text", "raw_message", "text_only_message", "date", "hour", "weekday"]
+      
+    """
+
     df['date'] =  df.apply(lambda df : df['raw_text'].split(" - ")[0],axis=1)
 
     temp = ["%d/%m/%Y, %I:%M %p" , "%d/%m/%y, %I:%M %p" , "%d/%m/%Y, %H:%M" , "%d/%m/%y, %H:%M" ,
@@ -185,4 +205,3 @@ class Cleaner:
     df['weekday'] = df['date'].dt.weekday
     
     return df
-  
